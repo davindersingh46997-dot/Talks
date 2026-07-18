@@ -1,0 +1,88 @@
+.message-row {
+    display: flex;
+    margin: 16px 0;
+}
+
+.message-row.user {
+    justify-content: flex -end;
+}
+
+.message-row.assistant {
+    justify-content: flex-start;
+}
+
+/* ===========================
+   Message Row
+=========================== */
+
+.message-row {
+
+    display: flex;
+
+    width: 100%;
+
+}
+
+.message-row.user {
+
+    justify-content: flex-end;
+
+}
+
+.message-row.assistant {
+
+    justify-content: flex-start;
+
+}
+
+/* ===========================
+   Bubble
+=========================== */
+
+.message-bubble {
+
+    max-width: 75%;
+
+    padding: 14px 18px;
+
+    border-radius: 18px;
+
+    line-height: 1.7;
+
+    white-space: pre-wrap;
+
+    word-break: break-word;
+
+    transition: var(--transition);
+
+    box-shadow: var(--shadow);
+
+}
+
+/* ===========================
+   User
+=========================== */
+
+.user-bubble {
+
+    background: var(--user-message);
+
+    color: white;
+
+    border-bottom-right-radius: 6px;
+
+}
+
+/* ===========================
+   Assistant
+=========================== */
+
+.assistant-bubble {
+
+    background: var(--assistant-message);
+
+    color: white;
+
+    border-bottom-left-radius: 6px;
+
+}

@@ -1,0 +1,22 @@
+:root {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-chat: #111827;
+
+  --user-message: #2563eb;
+  --assistant-message: #1f2937;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+
+  --border-color: #334155;
+
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+
+  --transition: 0.25s ease;
+
+  --shadow:
+    0 10px 30px rgba(0,0,0,.25);
+}

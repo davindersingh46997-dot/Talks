@@ -1,0 +1,120 @@
+/* ===========================
+   Container
+=========================== */
+
+.chat-input-container {
+
+    position: fixed;
+
+    bottom: 24px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 90%;
+    max-width: 900px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 14px 18px;
+
+    background: var(--bg-secondary);
+
+    border: 1px solid var(--border-color);
+
+    border-radius: 22px;
+
+    box-shadow: var(--shadow);
+
+}
+
+/* ===========================
+   Textarea
+=========================== */
+
+.chat-input-container textarea {
+
+    flex: 1;
+
+    resize: none;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    color: white;
+
+    font-size: 16px;
+
+    line-height: 24px;
+
+}
+
+/* ===========================
+   Icons
+=========================== */
+
+.icon-btn {
+
+    width: 42px;
+
+    height: 42px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: transparent;
+
+    color: var(--text-secondary);
+
+    cursor: pointer;
+
+    transition: var(--transition);
+
+}
+
+.icon-btn:hover {
+
+    background: rgba(255,255,255,.08);
+
+    color: white;
+
+}
+
+/* ===========================
+   Send Button
+=========================== */
+
+.send-btn {
+
+    width: 44px;
+
+    height: 44px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #2563eb;
+
+    color: white;
+
+    cursor: pointer;
+
+    transition: var(--transition);
+
+}
+
+.send-btn:hover {
+
+    transform: scale(1.05);
+
+}
