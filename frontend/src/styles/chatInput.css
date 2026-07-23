@@ -1,120 +1,247 @@
-/* ===========================
-   Container
-=========================== */
+.chat-input-wrapper {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 768px;
+  padding: 0 24px 18px 24px;
+  background: linear-gradient(180deg, rgba(23, 23, 23, 0) 0%, var(--bg-secondary) 40%, var(--bg-secondary) 100%);
+  box-sizing: border-box;
+  z-index: 5;
+}
 
 .chat-input-container {
-
-    position: fixed;
-
-    bottom: 24px;
-
-    left: 50%;
-
-    transform: translateX(-50%);
-
-    width: 90%;
-    max-width: 900px;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-    padding: 14px 18px;
-
-    background: var(--bg-secondary);
-
-    border: 1px solid var(--border-color);
-
-    border-radius: 22px;
-
-    box-shadow: var(--shadow);
-
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  transition: border-color var(--transition);
+  padding: 8px 12px;
+  gap: 8px;
 }
 
-/* ===========================
-   Textarea
-=========================== */
+.chat-input-container:focus-within {
+  border-color: rgba(6, 182, 212, 0.4);
+}
+
+.chat-input-text-row {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  gap: 8px;
+}
 
 .chat-input-container textarea {
-
-    flex: 1;
-
-    resize: none;
-
-    border: none;
-
-    outline: none;
-
-    background: transparent;
-
-    color: white;
-
-    font-size: 16px;
-
-    line-height: 24px;
-
+  flex: 1;
+  resize: none;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 14.5px;
+  line-height: 22px;
+  max-height: 200px;
+  padding: 6px 4px;
+  font-family: var(--sans);
+  box-sizing: border-box;
 }
 
-/* ===========================
-   Icons
-=========================== */
-
-.icon-btn {
-
-    width: 42px;
-
-    height: 42px;
-
-    border: none;
-
-    border-radius: 50%;
-
-    background: transparent;
-
-    color: var(--text-secondary);
-
-    cursor: pointer;
-
-    transition: var(--transition);
-
+.chat-input-container textarea::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.8;
 }
 
-.icon-btn:hover {
-
-    background: rgba(255,255,255,.08);
-
-    color: white;
-
+/* Control bar at the bottom of input card */
+.chat-input-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
+  padding-top: 6px;
+  position: relative;
 }
 
-/* ===========================
-   Send Button
-=========================== */
-
-.send-btn {
-
-    width: 44px;
-
-    height: 44px;
-
-    border: none;
-
-    border-radius: 50%;
-
-    background: #2563eb;
-
-    color: white;
-
-    cursor: pointer;
-
-    transition: var(--transition);
-
+.chat-input-left-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.send-btn:hover {
+.chat-input-right-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 
-    transform: scale(1.05);
+/* Action buttons */
+.chat-input-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
 
+.chat-input-action-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.chat-input-action-btn.active-control {
+  color: var(--accent-color);
+  background: var(--accent-light);
+}
+
+/* Model Select Button inside Input box */
+.input-model-selector-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+  transition: var(--transition);
+}
+
+.input-model-selector-pill:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: rgba(6, 182, 212, 0.2);
+}
+
+/* Model Dropdown inside Chat Input */
+.input-model-dropdown {
+  position: absolute;
+  bottom: 42px;
+  right: 48px;
+  background: #1e1e21;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 20;
+  width: 160px;
+}
+
+.input-model-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: var(--transition);
+}
+
+.input-model-dropdown-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.input-model-dropdown-item.active {
+  color: var(--accent-color);
+  font-weight: 600;
+  background: var(--accent-light);
+}
+
+/* Send Button */
+.chat-send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: #334155;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.chat-send-btn.active {
+  background: var(--accent-gradient);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
+}
+
+.chat-send-btn:disabled {
+  background: #252627;
+  color: #4b4b4d;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.chat-send-btn.active:hover {
+  transform: scale(1.05);
+}
+
+/* Streaming Indicator Waves */
+.streaming-indicator-container {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 12px;
+  padding: 0 4px;
+}
+
+.streaming-dot {
+  width: 3.5px;
+  height: 3.5px;
+  background-color: var(--accent-color);
+  border-radius: 50%;
+  animation: streaming-wave-animation 1.2s infinite ease-in-out;
+}
+
+.streaming-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.streaming-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes streaming-wave-animation {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* Bottom Disclaimer */
+.chat-disclaimer {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+  user-select: none;
+  opacity: 0.65;
 }

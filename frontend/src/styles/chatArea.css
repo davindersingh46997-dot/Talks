@@ -1,69 +1,186 @@
 .chat-area {
-
-    height: calc(100vh - 110px);
-
-    overflow-y: auto;
-
-    padding: 30px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 16px;
-
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+  background: var(--bg-secondary);
+  scroll-behavior: smooth;
+  display: flex;
+  flex-direction: column;
 }
 
-.user {
-
-    align-self: flex-end;
-
-    max-width: 70%;
-
-    padding: 14px;
-
-    border-radius: 16px;
-
-    background: #2563eb;
-
-    color: white;
-
+.chat-area-container {
+  width: 100%;
+  max-width: 768px;
+  margin: 0 auto;
+  padding: 40px 24px 140px 24px; /* Space for floating input wrapper */
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  box-sizing: border-box;
 }
 
-.assistant {
-
-    align-self: flex-start;
-
-    max-width: 70%;
-
-    padding: 14px;
-
-    border-radius: 16px;
-
-    background: #2f2f2f;
-
-    color: white;
-
+/* Custom Scrollbar for Chat Area */
+.chat-area::-webkit-scrollbar {
+  width: 8px;
 }
 
-.chat-area {
+.chat-area::-webkit-scrollbar-track {
+  background: transparent;
+}
 
-    flex: 1;
+.chat-area::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+}
 
-    width: 100%;
-    max-width: 900px;
+.chat-area::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
 
-    margin: 0 auto;
+/* Empty State welcome dashboard */
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 24px;
+  color: var(--text-primary);
+  max-width: 768px;
+  margin: auto;
+  box-sizing: border-box;
+  animation: fade-in 0.6s ease-out;
+}
 
-    padding: 30px 20px 120px;
+.welcome-logo {
+  font-size: 36px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%);
+  width: 84px;
+  height: 84px;
+  border-radius: 28px;
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  color: var(--accent-color);
+  box-shadow: 0 8px 24px rgba(6, 182, 212, 0.15);
+  animation: logo-pulse-animation 3s infinite alternate ease-in-out;
+}
 
-    display: flex;
-    flex-direction: column;
+.empty-state h2 {
+  font-family: var(--heading);
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+  letter-spacing: -0.6px;
+}
 
-    gap: 22px;
+.empty-state-subtitle {
+  font-size: 14.5px;
+  color: var(--text-secondary);
+  margin-bottom: 36px;
+  max-width: 420px;
+  line-height: 1.5;
+}
 
-    overflow-y: auto;
+/* Suggestions Grid */
+.suggestions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  width: 100%;
+  max-width: 680px;
+}
 
-    box-sizing: border-box;
+@media (max-width: 640px) {
+  .suggestions-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
+.suggestion-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  box-shadow: var(--shadow);
+}
+
+.suggestion-card:hover {
+  background: var(--bg-hover);
+  border-color: rgba(6, 182, 212, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.suggestion-card-icon-container {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  color: var(--accent-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+
+.suggestion-card:hover .suggestion-card-icon-container {
+  background: var(--accent-light);
+  border-color: rgba(6, 182, 212, 0.2);
+  color: #fff;
+}
+
+.suggestion-card-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.suggestion-card-header {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+  line-height: 1.4;
+}
+
+.suggestion-card-sub {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Animations */
+@keyframes logo-pulse-animation {
+  0% {
+    transform: scale(1) rotate(0deg);
+    box-shadow: 0 8px 24px rgba(6, 182, 212, 0.15);
+  }
+  100% {
+    transform: scale(1.04) rotate(3deg);
+    box-shadow: 0 8px 30px rgba(59, 130, 246, 0.3);
+    border-color: rgba(59, 130, 246, 0.4);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
