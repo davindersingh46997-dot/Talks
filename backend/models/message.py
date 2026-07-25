@@ -23,11 +23,12 @@ class Message(Base):
 
     chat_id = Column(
         Integer,
-        ForeignKey("chats.id")
+        ForeignKey("chats.id", ondelete="CASCADE"),
+        nullable=False
     )
 
     role = Column(
-        String,
+        String(20),
         nullable=False
     )
 

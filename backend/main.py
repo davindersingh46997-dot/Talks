@@ -1,10 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from bot import chat
+from services.chat_service import chat
 from fastapi.responses import StreamingResponse
-from bot import chat_stream
-from history import create_chat, list_chats, load_chat, chat_path
+from services.chat_service import chat_stream
+from services.history_service import create_chat, list_chats, load_chat, chat_path
 
 app = FastAPI()
 

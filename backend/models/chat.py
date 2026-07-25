@@ -21,14 +21,15 @@ class Chat(Base):
     )
 
     title = Column(
-        String,
+        String(255),
         nullable=False,
         default="New Chat"
     )
 
     user_id = Column(
         Integer,
-        ForeignKey("users.id")
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=True
     )
 
     created_at = Column(
@@ -44,11 +45,11 @@ class Chat(Base):
 
     user = relationship(
         "User",
-        backref="chats"
+        back_populates="chats"
     )
 
     messages = relationship(
         "Message",
         back_populates="chat",
-        cascade="all, delete"
+        cascade="all, delete-orphan"
     )

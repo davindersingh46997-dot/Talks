@@ -91,7 +91,7 @@ SESSION_ID = "default"
 def chat(question: str, chat_id: str | None = None):
 
     if chat_id:
-        from history import load_chat
+        from history_service import load_chat
         try:
             chat_data = load_chat(chat_id)
             history = []
@@ -119,7 +119,7 @@ def chat(question: str, chat_id: str | None = None):
     response = result["messages"][-1]
 
     if chat_id:
-        from history import load_chat, save_chat, generate_ai_title
+        from history_service import load_chat, save_chat, generate_ai_title
         try:
             chat_data = load_chat(chat_id)
             chat_data["messages"].append({"role": "user", "content": question})
@@ -154,7 +154,7 @@ def chat(question: str, chat_id: str | None = None):
 def chat_stream(question: str, chat_id: str | None = None) -> Iterator[str]:
 
     if chat_id:
-        from history import load_chat
+        from services.history_service import load_chat
         try:
             chat_data = load_chat(chat_id)
             history = []
@@ -184,7 +184,7 @@ def chat_stream(question: str, chat_id: str | None = None) -> Iterator[str]:
             yield chunk.content
 
     if chat_id:
-        from history import load_chat, save_chat, generate_ai_title
+        from services.history_service import load_chat, save_chat, generate_ai_title
         try:
             chat_data = load_chat(chat_id)
             chat_data["messages"].append({"role": "user", "content": question})

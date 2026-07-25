@@ -4,7 +4,7 @@ import uuid
 from pathlib import Path
 from datetime import datetime
 
-from bot import chat_model
+from services.chat_service import chat_model
 
 
 # -------------------------------------------------
