@@ -11,8 +11,8 @@ from backend.models.chat import Chat
 
 def create_chat(
     db: Session,
+    user_id: int,
     title: str = "New Chat",
-    user_id: Optional[int] = None,
 ) -> Chat:
 
     chat = Chat(

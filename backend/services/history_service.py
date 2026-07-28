@@ -1,11 +1,11 @@
-import json
-import uuid
-
 from pathlib import Path
 from datetime import datetime
+import uuid
 
 from services.chat_service import chat_model
 
+from sqlalchemy.orm import Session
+from models.chat import Chat
 
 # -------------------------------------------------
 # Project Paths
@@ -46,53 +46,34 @@ def chat_path(chat_id: str) -> Path:
 # Create New Chat
 # -------------------------------------------------
 
-def create_chat(title: str = "New Chat") -> str:
+def create_chat(
+    db: Session,
+    user_id: int,
+    title: str = "New Chat"
+):
     """
-    Creates a new chat JSON file.
+    Creates a new chat in the database.
 
     Returns:
         chat_id
     """
 
-    chat_id = f"chat_{uuid.uuid4().hex[:8]}"
+    chat = Chat(
+        title=title,
+        user_id=user_id
+    )
 
-    now = current_time()
+    db.add(chat)
+    db.commit()
+    db.refresh(chat)
 
-    chat = {
-        "id": chat_id,
-        "title": title,
-        "created_at": now,
-        "updated_at": now,
-        "messages": []
-    }
-
-    path = chat_path(chat_id)
-
-    with open(path, "w", encoding="utf-8") as file:
-        json.dump(
-            chat,
-            file,
-            indent=4,
-            ensure_ascii=False
-        )
-
-    return chat_id
+    return chat.id
 
 
-def load_chat(chat_id: str) -> dict:
-    """
-    Loads a chat JSON file.
-
-    Returns:
-        chat dict
-    """
-
-    path = chat_path(chat_id)
-
-    with open(path, "r", encoding="utf-8") as file:
-        chat = json.load(file)     
-
-    return chat
+def load_chat(
+    db : Session,
+    
+)
 
 
 def save_chat(chat: dict):
