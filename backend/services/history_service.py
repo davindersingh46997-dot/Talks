@@ -1,11 +1,30 @@
 from pathlib import Path
 from datetime import datetime
 import uuid
+from typing import Optional
 
 from services.chat_service import chat_model
+from models.chat import Chat
+from models.message import Message
 
 from sqlalchemy.orm import Session
-from models.chat import Chat
+
+from crud.chat import (
+    create_chat,
+    get_chat,
+    get_all_chats,
+    rename_chat,
+    delete_chat,
+    touch_chat,
+    chat_exists,
+    chat_count,
+)
+
+from crud.message import (
+    create_message,
+    get_chat_messages,
+    delete_messages,
+)
 
 # -------------------------------------------------
 # Project Paths
@@ -71,53 +90,34 @@ def create_chat(
 
 
 def load_chat(
-    db : Session,
-    
-)
+    db: Session,
+    chat_id: int,
+    user_id: int,
+) -> Optional[Chat]:
 
-
-def save_chat(chat: dict):
-    """
-    Saves a chat dict to JSON file.
-    """
-
-    chat["updated_at"] = current_time()
-
-    path = chat_path(chat["id"])
-
-    with open(path, "w", encoding="utf-8") as file:
-        json.dump(
-            chat,
-            file,
-            indent=4,
-            ensure_ascii=False
-        )
+    return get_chat(
+        db=db,
+        chat_id=chat_id,
+        user_id=user_id
+    )
 
 # -------------------------------------------------
 # List Chats
 # -------------------------------------------------
 
-def list_chats():
+def list_chats(
+    db: Session,
+    user_id: int,
+):
     """
-    Returns all chats sorted by latest update.
+    Returns all chats for the current user,
+    sorted by latest update.
     """
 
-    chats = []
-
-    for file in CHAT_DIR.glob("*.json"):
-
-        with open(file, "r", encoding="utf-8") as f:
-
-            chats.append(
-                json.load(f)
-            )
-
-    chats.sort(
-        key=lambda x: x["updated_at"],
-        reverse=True
+    return get_all_chats(
+        db=db,
+        user_id=user_id,
     )
-
-    return chats  
 
 
 def generate_ai_title(first_message: str):
@@ -134,4 +134,103 @@ Conversation:
 {first_message}
 """
 
-    return chat_model.invoke(prompt).content.strip()              
+    return chat_model.invoke(prompt).content.strip()     
+
+
+def update_chat_title(
+    db: Session,
+    chat_id: int,
+    new_title: str,
+):
+
+    return rename_chat(
+        db=db,
+        chat_id=chat_id,
+        new_title=new_title,
+    )
+
+
+def remove_chat(
+    db: Session,
+    chat_id: int,
+):
+
+    return delete_chat(
+        db=db,
+        chat_id=chat_id,
+    )
+
+def save_user_message(
+    db: Session,
+    chat_id: int,
+    content: str,
+) -> Message:
+
+    return create_message(
+        db=db,
+        chat_id=chat_id,
+        role="user",
+        content=content,
+    )
+
+def save_ai_message(
+    db: Session,
+    chat_id: int,
+    content: str,
+) -> Message:
+
+    return create_message(
+        db=db,
+        chat_id=chat_id,
+        role="assistant",
+        content=content,
+    )
+
+def load_chat_history(
+    db: Session,
+    chat_id: int,
+):
+
+    return get_chat_messages(
+        db=db,
+        chat_id=chat_id,
+    )
+
+
+def clear_chat_history(
+    db: Session,
+    chat_id: int,
+):
+
+    return delete_messages(
+        db=db,
+        chat_id=chat_id,
+    )
+
+def update_timestamp(
+    db: Session,
+    chat_id: int,
+):
+
+    touch_chat(
+        db=db,
+        chat_id=chat_id,
+    )
+
+
+def exists(
+    db: Session,
+    chat_id: int,
+):
+
+    return chat_exists(
+        db=db,
+        chat_id=chat_id,
+    )
+
+
+def total_chats(
+    db: Session,
+):
+
+    return chat_count(db)
