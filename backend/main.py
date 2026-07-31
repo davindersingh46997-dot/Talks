@@ -1,12 +1,26 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from services.chat_service import chat
 from fastapi.responses import StreamingResponse
-from services.chat_service import chat_stream
-from services.history_service import create_chat, list_chats, load_chat, chat_path
+from sqlalchemy.orm import Session
+from pydantic import BaseModel
+
+from backend.core.database import get_db
+
+from backend.services.chat_service import chat, chat_stream
+from backend.services.history_service import (
+    create_chat,
+    list_chats,
+    load_chat,
+    update_chat_title,
+    remove_chat,
+)
+
+from backend.api.routes.auth import router as auth_router
+
 
 app = FastAPI()
+
+app.include_router(auth_router)
 
 # Allow React frontend to communicate with the backend
 app.add_middleware(
@@ -19,7 +33,7 @@ app.add_middleware(
 
 class ChatRequest(BaseModel):
     message: str
-    chat_id: str | None = None
+    chat_id: int | None = None
 
 class RenameRequest(BaseModel):
     title: str
@@ -28,17 +42,15 @@ class RenameRequest(BaseModel):
 def home():
     return {"message": "Backend is running!"}
 
-@app.post("/chat")
-def chat_endpoint(request: ChatRequest):
+@app.post("/chat/new")
+def new_chat(
+    db: Session = Depends(get_db),
+):
 
-    print("Request received:", request.message, "Chat ID:", request.chat_id)
-
-    response = chat(request.message, chat_id=request.chat_id)
-
-    print("Response generated:", response)
+    chat = create_chat(db=db)
 
     return {
-        "response": response
+        "chat_id": chat.id,
     }
 
 @app.post("/chat/stream")
@@ -53,69 +65,77 @@ def chat_stream_endpoint(request: ChatRequest):
         media_type="text/plain"
     )
 
-@app.post("/chat/new")
-def new_chat():
-
-    chat_id = create_chat()
-
-    return {
-        "chat_id": chat_id
-    }
-
 @app.get("/chats")
-def get_chats():
+def get_chats(
+    db: Session = Depends(get_db),
+):
 
-    chats = list_chats()
+    return list_chats(db=db)
 
-    sidebar = []
-
-    for chat in chats:
-
-        sidebar.append(
-            {
-                "id": chat["id"],
-                "title": chat["title"],
-                "updated_at": chat["updated_at"]
-            }
-        )
-
-    return sidebar
 
 @app.get("/chats/{chat_id}")
-def get_chat_endpoint(chat_id: str):
-    try:
-        chat_data = load_chat(chat_id)
-        return chat_data
-    except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="Chat not found")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+def get_chat_endpoint(
+    chat_id: int,
+    db: Session = Depends(get_db),
+):
 
+    chat = load_chat(
+        db=db,
+        chat_id=chat_id,
+    )
+
+    if chat is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Chat not found",
+        )
+
+    return chat
+
+    
 @app.delete("/chats/{chat_id}")
-def delete_chat_endpoint(chat_id: str):
-    import os
-    try:
-        path = chat_path(chat_id)
-        if path.exists():
-            os.remove(path)
-            return {"message": "Chat deleted successfully"}
-        else:
-            raise HTTPException(status_code=404, detail="Chat not found")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+def delete_chat_endpoint(
+    chat_id: int,
+    db: Session = Depends(get_db),
+):
 
-@app.post("/chats/{chat_id}/rename")
-def rename_chat_endpoint(chat_id: str, request: RenameRequest):
-    try:
-        from history import save_chat
-        chat_data = load_chat(chat_id)
-        chat_data["title"] = request.title
-        save_chat(chat_data)
-        return {"message": "Chat renamed successfully"}
-    except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="Chat not found")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    deleted = remove_chat(
+        db=db,
+        chat_id=chat_id,
+    )
 
+    if not deleted:
+        raise HTTPException(
+            status_code=404,
+            detail="Chat not found",
+        )
+
+    return {
+        "message": "Chat deleted successfully"
+    }
+
+
+@app.patch("/chats/{chat_id}/rename")
+def rename_chat(
+    chat_id: int,
+    request: RenameRequest,
+    db: Session = Depends(get_db),
+):
+
+    chat = update_chat_title(
+        db=db,
+        chat_id=chat_id,
+        new_title=request.title,
+    )
+
+    if chat is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Chat not found",
+        )
+
+    return {
+        "message": "Chat renamed successfully"
+    }
 
 

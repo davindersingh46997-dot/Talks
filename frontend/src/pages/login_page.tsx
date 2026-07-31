@@ -15,11 +15,33 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const onSubmit = async (data : LoginFormData) => {
-    console.log(data);
+  const onSubmit = async (data: LoginFormData) => {
+    try {
+        const response = await fetch("http://127.0.0.1:8000/auth/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
 
-    navigate("./chat");
-  }
+        if (!response.ok) {
+            throw new Error("Invalid email or password");
+        }
+
+        const result = await response.json();
+
+        localStorage.setItem(
+            "access_token",
+            result.access_token
+        );
+
+        navigate("/chat");
+
+    } catch (error) {
+        alert("Invalid email or password");
+    }
+};
   
   return (
     <div className="login-page">
