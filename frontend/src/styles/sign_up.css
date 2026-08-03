@@ -1,0 +1,366 @@
+/* ===========================
+   Global Layout
+=========================== */
+
+.signup-page{
+    min-height:100vh;
+    display:flex;
+    background:#f5f7fb;
+}
+
+/* ===========================
+   Left Panel
+=========================== */
+
+.signup-left{
+
+    flex:1;
+
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #1d4ed8,
+        #4338ca
+    );
+
+    color:white;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:60px;
+}
+
+.brand{
+
+    max-width:460px;
+}
+
+.logo{
+
+    width:90px;
+
+    margin-bottom:30px;
+}
+
+.brand h1{
+
+    font-size:42px;
+
+    margin-bottom:20px;
+
+    font-weight:700;
+}
+
+.brand p{
+
+    font-size:18px;
+
+    line-height:1.8;
+
+    opacity:.95;
+}
+
+/* ===========================
+   Right Panel
+=========================== */
+
+.signup-right{
+
+    flex:1;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:40px;
+}
+
+.signup-card{
+
+    width:100%;
+    max-width:470px;
+
+    background:white;
+
+    border-radius:24px;
+
+    padding:40px;
+
+    box-shadow:0 20px 60px rgba(0,0,0,.08);
+}
+
+.signup-card h2{
+
+    text-align:center;
+
+    font-size:32px;
+
+    color:#1e293b;
+
+    margin-bottom:8px;
+}
+
+.subtitle{
+
+    text-align:center;
+
+    color:#64748b;
+
+    margin-bottom:35px;
+}
+
+/* ===========================
+   Form
+=========================== */
+
+.input-group{
+
+    margin-bottom:22px;
+}
+
+.input-group label{
+
+    display:block;
+
+    margin-bottom:10px;
+
+    font-weight:600;
+
+    color:#334155;
+}
+
+.input-box{
+
+    display:flex;
+
+    align-items:center;
+
+    border:1px solid #dbe3ee;
+
+    border-radius:12px;
+
+    transition:.3s;
+
+    padding:0 15px;
+}
+
+.input-box:focus-within{
+
+    border-color:#2563eb;
+
+    box-shadow:0 0 0 3px rgba(37,99,235,.12);
+}
+
+.input-icon{
+
+    font-size:20px;
+
+    color:#64748b;
+}
+
+.input-box input{
+
+    flex:1;
+
+    border:none;
+
+    outline:none;
+
+    padding:16px;
+
+    font-size:15px;
+
+    background:transparent;
+}
+
+/* ===========================
+   Eye Button
+=========================== */
+
+.eye-btn{
+
+    background:none;
+
+    border:none;
+
+    cursor:pointer;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#64748b;
+
+    font-size:20px;
+}
+
+/* ===========================
+   Create Account Button
+=========================== */
+
+.signup-btn{
+
+    width:100%;
+
+    height:54px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#2563eb;
+
+    color:white;
+
+    font-size:16px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:12px;
+
+    transition:.3s;
+}
+
+.signup-btn:hover{
+
+    background:#1d4ed8;
+}
+
+/* ===========================
+   Divider
+=========================== */
+
+.divider{
+
+    display:flex;
+
+    align-items:center;
+
+    margin:28px 0;
+}
+
+.divider::before,
+.divider::after{
+
+    content:"";
+
+    flex:1;
+
+    height:1px;
+
+    background:#dbe3ee;
+}
+
+.divider span{
+
+    margin:0 16px;
+
+    color:#64748b;
+
+    font-size:14px;
+}
+
+/* ===========================
+   Social Buttons
+=========================== */
+
+.social-buttons{
+
+    display:flex;
+
+    gap:16px;
+}
+
+.social-btn{
+
+    flex:1;
+
+    height:52px;
+
+    border-radius:12px;
+
+    border:1px solid #dbe3ee;
+
+    background:white;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:10px;
+
+    font-size:15px;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.social-btn:hover{
+
+    background:#f8fafc;
+}
+
+/* ===========================
+   Footer
+=========================== */
+
+.footer-text{
+
+    margin-top:28px;
+
+    text-align:center;
+
+    color:#64748b;
+}
+
+.footer-text span{
+
+    margin-left:6px;
+
+    color:#2563eb;
+
+    font-weight:600;
+
+    cursor:pointer;
+}
+
+/* ===========================
+   Responsive
+=========================== */
+
+@media(max-width:900px){
+
+    .signup-left{
+
+        display:none;
+    }
+
+    .signup-right{
+
+        flex:1;
+    }
+
+    .signup-card{
+
+        max-width:100%;
+    }
+}

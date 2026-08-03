@@ -3,13 +3,13 @@ from datetime import datetime
 import uuid
 from typing import Optional
 
-from services.chat_service import chat_model
-from models.chat import Chat
-from models.message import Message
+from backend.services.chat_service import chat_model
+from backend.models.chat import Chat
+from backend.models.message import Message
 
 from sqlalchemy.orm import Session
 
-from crud.chat import (
+from backend.crud.chat import (
     create_chat,
     get_chat,
     get_all_chats,
@@ -20,10 +20,10 @@ from crud.chat import (
     chat_count,
 )
 
-from crud.message import (
+from backend.crud.message import (
     create_message,
     get_chat_messages,
-    delete_messages,
+    delete_chat_messages,
 )
 
 # -------------------------------------------------
@@ -202,7 +202,7 @@ def clear_chat_history(
     chat_id: int,
 ):
 
-    return delete_messages(
+    return delete_chat_messages(
         db=db,
         chat_id=chat_id,
     )

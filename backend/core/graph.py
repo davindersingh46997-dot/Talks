@@ -10,7 +10,7 @@ from langchain_core.messages import (
 
 from typing import TypedDict,Annotated,Iterator
 
-from core.llm import chat_model
+from backend.core.llm import chat_model
 
 class ChatState(TypedDict):
 

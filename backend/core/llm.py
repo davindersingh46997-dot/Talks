@@ -6,7 +6,7 @@ from langchain_huggingface import (
     HuggingFaceEndpoint,
 )
 
-from memory.short_term import ShortTermMemory
+from backend.memory.short_term import ShortTermMemory
 
 load_dotenv()
 

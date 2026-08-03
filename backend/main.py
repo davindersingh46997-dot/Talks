@@ -47,7 +47,7 @@ def new_chat(
     db: Session = Depends(get_db),
 ):
 
-    chat = create_chat(db=db)
+    chat = create_chat(db=db)  # Replace with actual user ID
 
     return {
         "chat_id": chat.id,

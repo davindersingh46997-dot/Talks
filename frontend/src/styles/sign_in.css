@@ -1,0 +1,197 @@
+.signin-page{
+
+    min-height:100vh;
+
+    background:#f4f7fc;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:40px;
+}
+
+.signin-card{
+
+    width:430px;
+
+    height:90vh;
+
+    background:white;
+
+    border-radius:24px;
+
+    padding:35px;
+
+    box-shadow:0 20px 60px rgba(0,0,0,.08);
+
+    display:flex;
+
+    flex-direction:column;
+}
+
+.signin-logo{
+
+    width:70px;
+
+    margin:0 auto;
+}
+
+.signin-card h1{
+
+    margin-top:20px;
+
+    text-align:center;
+
+    color:#1e293b;
+}
+
+.subtitle{
+
+    text-align:center;
+
+    color:#64748b;
+
+    margin-top:10px;
+
+    line-height:1.6;
+}
+
+.hero{
+
+    flex:1;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+}
+
+.hero img{
+
+    width:220px;
+}
+
+.features{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:12px;
+
+    margin-bottom:30px;
+}
+
+.feature-card{
+
+    background:#eef4ff;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    text-align:center;
+
+    font-size:14px;
+
+    font-weight:600;
+
+    color:#2563eb;
+}
+
+.bottom-buttons{
+
+    margin-top:auto;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:15px;
+}
+
+.primary-btn{
+
+    height:52px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#2563eb;
+
+    color:white;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:10px;
+
+    cursor:pointer;
+}
+
+.primary-btn:hover{
+
+    background:#1d4ed8;
+}
+
+.social-btn{
+
+    height:50px;
+
+    border:1px solid #dbe3ee;
+
+    background:white;
+
+    border-radius:12px;
+
+    font-size:15px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:10px;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.social-btn:hover{
+
+    background:#f8fafc;
+}
+
+.signup-text{
+
+    text-align:center;
+
+    color:#64748b;
+
+    margin-top:10px;
+}
+
+.signup-text span{
+
+    color:#2563eb;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    margin-left:6px;
+}

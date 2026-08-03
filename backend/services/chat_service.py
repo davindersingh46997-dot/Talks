@@ -1,11 +1,11 @@
 from langchain_core.messages import HumanMessage, AIMessage
-from core.graph import graph
+from backend.core.graph import graph
 
-from core.llm import chat_model
+from backend.core.llm import chat_model
 
 from typing import Iterator
 
-from memory.short_term import ShortTermMemory
+from backend.memory.short_term import ShortTermMemory
 
 memory = ShortTermMemory(max_messages=20)
 

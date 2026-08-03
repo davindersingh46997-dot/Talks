@@ -37,6 +37,7 @@ def login(
         password=request.password,
     )
 
+
 @router.post(
     "/register",
     response_model=UserResponse,
