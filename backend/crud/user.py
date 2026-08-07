@@ -14,7 +14,7 @@ def create_user(
     user = User(
         username=username,
         email=email,
-        password=hashed_password,
+        password_hash=hashed_password,
     )
 
     db.add(user)

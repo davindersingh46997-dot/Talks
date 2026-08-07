@@ -49,19 +49,25 @@ def create_access_token(
 # Decode Access Token
 # -------------------------------------------------------------------
 
-def decode_access_token(
-    token: str,
-) -> Optional[dict]:
+from jose import JWTError
+
+def decode_access_token(token: str):
+
+    print("=" * 60)
+    print("SECRET_KEY:", SECRET_KEY)
+    print("TOKEN:", token)
 
     try:
-
         payload = jwt.decode(
             token,
             SECRET_KEY,
             algorithms=[ALGORITHM],
         )
 
+        print("Decoded payload:", payload)
+
         return payload
 
-    except JWTError:
+    except JWTError as e:
+        print("JWT ERROR:", repr(e))
         return None

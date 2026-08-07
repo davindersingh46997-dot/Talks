@@ -1,22 +1,29 @@
 from langchain_core.messages import HumanMessage, AIMessage
+from backend.api.dependencies import get_current_user
 from backend.core.graph import graph
 
 from backend.core.llm import chat_model
+
+from backend.core.database import SessionLocal
 
 from typing import Iterator
 
 from backend.memory.short_term import ShortTermMemory
 
+from backend.api.dependencies import get_current_user
+
 memory = ShortTermMemory(max_messages=20)
 
 SESSION_ID = "default"
 
+db = SessionLocal()
+
 def chat(question: str, chat_id: str | None = None):
 
     if chat_id:
-        from history_service import load_chat
+        from backend.services.history_service import load_chat
         try:
-            chat_data = load_chat(chat_id)
+            chat_data = load_chat(db=db, chat_id=chat_id, user_id=get_current_user().id)
             history = []
             for msg in chat_data.get("messages", []):
                 if msg["role"] == "user":
@@ -44,7 +51,7 @@ def chat(question: str, chat_id: str | None = None):
     if chat_id:
         from history_service import load_chat, save_chat, generate_ai_title
         try:
-            chat_data = load_chat(chat_id)
+            chat_data = load_chat(db=db, chat_id=chat_id, user_id=get_current_user().id)
             chat_data["messages"].append({"role": "user", "content": question})
             chat_data["messages"].append({"role": "assistant", "content": response.content})
             
@@ -77,9 +84,9 @@ def chat(question: str, chat_id: str | None = None):
 def chat_stream(question: str, chat_id: str | None = None) -> Iterator[str]:
 
     if chat_id:
-        from services.history_service import load_chat
+        from backend.services.history_service import load_chat
         try:
-            chat_data = load_chat(chat_id)
+            chat_data = load_chat(db=db, chat_id=chat_id, user_id=get_current_user().id)
             history = []
             for msg in chat_data.get("messages", []):
                 if msg["role"] == "user":
@@ -107,9 +114,9 @@ def chat_stream(question: str, chat_id: str | None = None) -> Iterator[str]:
             yield chunk.content
 
     if chat_id:
-        from services.history_service import load_chat, save_chat, generate_ai_title
+        from backend.services.history_service import load_chat, save_chat, generate_ai_title
         try:
-            chat_data = load_chat(chat_id)
+            chat_data = load_chat(db=db, chat_id=chat_id, user_id=get_current_user().id)
             chat_data["messages"].append({"role": "user", "content": question})
             chat_data["messages"].append({"role": "assistant", "content": full_response})
             

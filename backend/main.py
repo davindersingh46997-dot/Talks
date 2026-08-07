@@ -16,20 +16,26 @@ from backend.services.history_service import (
 )
 
 from backend.api.routes.auth import router as auth_router
-
+from backend.api.dependencies import get_current_user
+from backend.models.user import User
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-app.include_router(auth_router)
-
-# Allow React frontend to communicate with the backend
+# Add middleware immediately after creating the app
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Vite default
+    allow_origins=[
+        "http://localhost:5173",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include routers AFTER middleware
+app.include_router(auth_router)
 
 class ChatRequest(BaseModel):
     message: str
@@ -45,9 +51,13 @@ def home():
 @app.post("/chat/new")
 def new_chat(
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
 
-    chat = create_chat(db=db)  # Replace with actual user ID
+    chat = create_chat(
+        db=db,
+        user_id=current_user.id,
+    )
 
     return {
         "chat_id": chat.id,
@@ -68,9 +78,12 @@ def chat_stream_endpoint(request: ChatRequest):
 @app.get("/chats")
 def get_chats(
     db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
 ):
-
-    return list_chats(db=db)
+    return list_chats(
+        db=db,
+        user_id=user.id,
+    )
 
 
 @app.get("/chats/{chat_id}")
@@ -139,3 +152,6 @@ def rename_chat(
     }
 
 
+import inspect
+
+print(inspect.getsource(create_chat))

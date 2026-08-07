@@ -9,8 +9,9 @@ from backend.models.message import Message
 
 from sqlalchemy.orm import Session
 
+from backend.crud.chat import create_chat as crud_create_chat
+
 from backend.crud.chat import (
-    create_chat,
     get_chat,
     get_all_chats,
     rename_chat,
@@ -68,25 +69,13 @@ def chat_path(chat_id: str) -> Path:
 def create_chat(
     db: Session,
     user_id: int,
-    title: str = "New Chat"
+    title: str = "New Chat",
 ):
-    """
-    Creates a new chat in the database.
-
-    Returns:
-        chat_id
-    """
-
-    chat = Chat(
+    return crud_create_chat(
+        db=db,
+        user_id=user_id,
         title=title,
-        user_id=user_id
     )
-
-    db.add(chat)
-    db.commit()
-    db.refresh(chat)
-
-    return chat.id
 
 
 def load_chat(
@@ -234,3 +223,33 @@ def total_chats(
 ):
 
     return chat_count(db)
+
+
+
+def save_chat(
+    db: Session,
+    chat_id: int,
+    role: str,
+    content: str,
+):
+    """
+    Save a single message to an existing chat.
+
+    Args:
+        db: SQLAlchemy session
+        chat_id: Chat ID
+        role: "user", "assistant", or "system"
+        content: Message text
+    """
+
+    chat = get_chat(db, chat_id)
+
+    if chat is None:
+        raise ValueError(f"Chat {chat_id} does not exist.")
+
+    return create_message(
+        db=db,
+        chat_id=chat_id,
+        role=role,
+        content=content,
+    )

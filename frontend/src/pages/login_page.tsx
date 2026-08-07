@@ -31,9 +31,13 @@ const LoginPage = () => {
 
         const result = await response.json();
 
-        localStorage.setItem(
-            "access_token",
-            result.access_token
+        console.log("LOGIN RESPONSE:", result);
+
+        localStorage.setItem("access_token", result.access_token);
+
+        console.log(
+            "TOKEN AFTER SAVE:",
+            localStorage.getItem("access_token")
         );
 
         navigate("/chat");
@@ -73,8 +77,8 @@ const LoginPage = () => {
           <form onSubmit={(e) => {
             e.preventDefault();
             onSubmit({
-              email: "",
-              password: ""
+              email: email,
+              password: password
             });
           }}>
 
@@ -88,6 +92,8 @@ const LoginPage = () => {
 
                 <input
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
                 />
               </div>
@@ -103,6 +109,8 @@ const LoginPage = () => {
 
                 <input
                   type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                 />
 
