@@ -3,13 +3,16 @@ from datetime import datetime
 import uuid
 from typing import Optional
 
-from backend.services.chat_service import chat_model
+from backend.core.llm import chat_model
+from backend.crud import message
 from backend.models.chat import Chat
 from backend.models.message import Message
 
 from sqlalchemy.orm import Session
 
 from backend.crud.chat import create_chat as crud_create_chat
+
+from fastapi import HTTPException, status
 
 from backend.crud.chat import (
     get_chat,
@@ -33,10 +36,6 @@ from backend.crud.message import (
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
-CHAT_DIR = PROJECT_ROOT / "chats"
-
-CHAT_DIR.mkdir(exist_ok=True)
-
 
 # -------------------------------------------------
 # Timestamp
@@ -53,14 +52,27 @@ def current_time() -> str:
 # -------------------------------------------------
 # Chat File Path
 # -------------------------------------------------
-
-def chat_path(chat_id: str) -> Path:
+def chat_path(chat_id: int):
     """
-    Returns the JSON path of a chat.
+    Deprecated JSON chat-path function.
+
+    Chat data is now stored in PostgreSQL.
+    This function is intentionally kept only to detect
+    any remaining code that tries to use the old JSON
+    storage system.
+
+    Args:
+        chat_id: PostgreSQL chat ID.
+
+    Raises:
+        RuntimeError: Always, because JSON chat storage
+        is no longer supported.
     """
 
-    return CHAT_DIR / f"{chat_id}.json"
-
+    raise RuntimeError(
+        f"JSON chat storage is disabled. "
+        f"Chat ID {chat_id} must be accessed through PostgreSQL."
+    )
 
 # -------------------------------------------------
 # Create New Chat
@@ -82,13 +94,20 @@ def load_chat(
     db: Session,
     chat_id: int,
     user_id: int,
-) -> Optional[Chat]:
-
-    return get_chat(
+):
+    chat = get_chat(
         db=db,
         chat_id=chat_id,
-        user_id=user_id
+        user_id=user_id,
     )
+
+    if chat is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Chat not found",
+        )
+
+    return chat
 
 # -------------------------------------------------
 # List Chats
@@ -155,18 +174,34 @@ def save_user_message(
     content: str,
 ) -> Message:
 
-    return create_message(
+    print("========================================")
+    print("SAVE USER MESSAGE")
+    print("chat_id:", chat_id)
+    print("chat_id type:", type(chat_id))
+    print("content:", content)
+    print("========================================")
+
+    message = create_message(
         db=db,
         chat_id=chat_id,
         role="user",
         content=content,
     )
 
+    return message
+
 def save_ai_message(
     db: Session,
     chat_id: int,
     content: str,
 ) -> Message:
+
+    print("========================================")
+    print("SAVE AI MESSAGE")
+    print("chat_id:", chat_id)
+    print("chat_id type:", type(chat_id))
+    print("content:", content)
+    print("========================================")
 
     return create_message(
         db=db,
@@ -178,11 +213,13 @@ def save_ai_message(
 def load_chat_history(
     db: Session,
     chat_id: int,
+    user_id: int
 ):
 
     return get_chat_messages(
         db=db,
         chat_id=chat_id,
+        user_id=user_id
     )
 
 
@@ -242,7 +279,7 @@ def save_chat(
         content: Message text
     """
 
-    chat = get_chat(db, chat_id)
+    chat = get_chat(db,chat_id=chat_id,user_id=None)
 
     if chat is None:
         raise ValueError(f"Chat {chat_id} does not exist.")

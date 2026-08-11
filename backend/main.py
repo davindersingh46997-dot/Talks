@@ -11,6 +11,7 @@ from backend.services.history_service import (
     create_chat,
     list_chats,
     load_chat,
+    load_chat_history,
     update_chat_title,
     remove_chat,
 )
@@ -64,10 +65,19 @@ def new_chat(
     }
 
 @app.post("/chat/stream")
-def chat_stream_endpoint(request: ChatRequest):
+def chat_stream_endpoint(
+    request: ChatRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
 
     def generate():
-        for chunk in chat_stream(request.message, chat_id=request.chat_id):
+        for chunk in chat_stream(
+            request.message, 
+            db=db, 
+            user_id=current_user.id, 
+            chat_id=request.chat_id
+            ):
             yield chunk
 
     return StreamingResponse(
@@ -78,11 +88,11 @@ def chat_stream_endpoint(request: ChatRequest):
 @app.get("/chats")
 def get_chats(
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
 ):
     return list_chats(
         db=db,
-        user_id=user.id,
+        user_id=current_user.id,
     )
 
 
@@ -90,31 +100,56 @@ def get_chats(
 def get_chat_endpoint(
     chat_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
+    if chat_id is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Chat ID is required",
+        )
 
     chat = load_chat(
         db=db,
         chat_id=chat_id,
+        user_id=current_user.id,
     )
 
-    if chat is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Chat not found",
-        )
+    messages = load_chat_history(
+        db=db,
+        chat_id=chat_id,
+        user_id=current_user.id,
+    )
 
-    return chat
+    return {
+        "id": chat.id,
+        "title": chat.title,
+        "user_id": chat.user_id,
+        "created_at": chat.created_at,
+        "updated_at": chat.updated_at,
+        "messages": [
+            {
+                "id": message.id,
+                "chat_id": message.chat_id,
+                "role": message.role,
+                "content": message.content,
+                "created_at": message.created_at,
+            }
+            for message in messages
+        ],
+    }
 
     
 @app.delete("/chats/{chat_id}")
 def delete_chat_endpoint(
     chat_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
 
     deleted = remove_chat(
         db=db,
         chat_id=chat_id,
+        user_id=current_user.id
     )
 
     if not deleted:
@@ -133,6 +168,7 @@ def rename_chat(
     chat_id: int,
     request: RenameRequest,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
 
     chat = update_chat_title(
@@ -150,8 +186,3 @@ def rename_chat(
     return {
         "message": "Chat renamed successfully"
     }
-
-
-import inspect
-
-print(inspect.getsource(create_chat))

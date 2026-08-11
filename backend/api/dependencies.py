@@ -8,6 +8,11 @@ from backend.crud.user import get_user_by_id
 
 from backend.core.database import SessionLocal
 
+from jose import jwt, JWTError
+from backend.models.user import User
+
+from backend.core.config import settings
+
 
 def get_db():
     db = SessionLocal()
@@ -24,28 +29,59 @@ def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db),
 ):
-    print("=" * 60)
     print("TOKEN:", token)
 
-    payload = verify_access_token(token)
-    print("PAYLOAD:", payload)
+    try:
+        payload = jwt.decode(
+            token,
+            settings.SECRET_KEY,
+            algorithms=["HS256"],
+        )
 
-    if payload is None:
+        print("DECODED PAYLOAD:", payload)
+
+        user_id = payload.get("sub")
+
+        print("USER ID FROM TOKEN:", user_id)
+
+        if user_id is None:
+            print("❌ No user_id in token")
+
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid token: no user ID",
+            )
+
+        user = db.query(User).filter(
+            User.id == int(user_id)
+        ).first()
+
+        print("USER FROM DATABASE:", user)
+
+        if user is None:
+            print("❌ User does not exist")
+
+            raise HTTPException(
+                status_code=401,
+                detail="User not found",
+            )
+
+        print("✅ AUTHENTICATED USER:", user.id)
+
+        return user
+
+    except JWTError as e:
+        print("❌ JWT ERROR:", repr(e))
+
         raise HTTPException(
             status_code=401,
             detail="Invalid token",
         )
 
-    user_id = payload.get("sub")
-    print("USER_ID:", user_id)
+    except Exception as e:
+        print("❌ AUTH ERROR:", repr(e))
 
-    user = get_user_by_id(db, int(user_id))
-    print("USER:", user)
-
-    if user is None:
         raise HTTPException(
             status_code=401,
-            detail="User not found",
+            detail="Authentication failed",
         )
-
-    return user

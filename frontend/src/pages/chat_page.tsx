@@ -20,7 +20,7 @@ interface BackendChatDetail {
 
 function ChatPage() {
   const [chats, setChats] = useState<Chat[]>([]);
-  const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const [activeChatId, setActiveChatId] = useState<number | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -51,68 +51,115 @@ function ChatPage() {
   }, []);
 
   // Fetch messages for a specific chat
-  const handleSelectChat = async (chatId: string) => {
-    setActiveChatId(chatId);
-    try {
-      const token = localStorage.getItem("access_token");
-
-      const res = await fetch(`http://127.0.0.1:8000/chats/${chatId}`, {
-          headers: {
-              Authorization: `Bearer ${token}`,
-          },
-      });
-      if (res.ok) {
-        const data: BackendChatDetail = await res.json();
-        const mapped: Message[] = data.messages.map((m, idx) => ({
-          id: `${chatId}-${idx}`,
-          role: m.role,
-          text: m.content,
-        }));
-        setMessages(mapped);
-      }
-    } catch (err) {
-      console.error(`Error loading chat ${chatId}:`, err);
+  const handleSelectChat = async (chatId: number) => {
+    if (isGenerating) {
+        return;
     }
-  };
 
-  // Create a new chat session
-  const handleCreateChat = async () => {
+    setActiveChatId(chatId);
+
+    // Clear current conversation while loading
+    setMessages([]);
+
     try {
         const token = localStorage.getItem("access_token");
 
-        console.log("TOKEN FROM STORAGE:", token);
+        const res = await fetch(
+            `http://127.0.0.1:8000/chats/${chatId}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
 
-        const res = await fetch("http://127.0.0.1:8000/chat/new", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-        });
+        const data = await res.json();
 
-        if (res.ok) {
-            const data = await res.json();
-            const newChatId = data.chat_id;
+        console.log("SELECTED CHAT:", chatId);
+        console.log("CHAT RESPONSE:", data);
 
-            await fetchChats();
-            setActiveChatId(newChatId);
-            setMessages([]);
-
-            return newChatId;
+        if (!res.ok) {
+            console.error("Backend error:", data);
+            return;
         }
 
-        const error = await res.json();
-        console.log(error);
+        const mapped: Message[] = (data.messages ?? []).map(
+            (m: BackendMessage, idx: number) => ({
+                id: `${chatId}-${idx}`,
+                role: m.role,
+                text: m.content,
+            })
+        );
+
+        console.log("FULL CHAT RESPONSE:", data);
+        console.log("MESSAGES FROM BACKEND:", data.messages);
+        console.log("MESSAGE COUNT:", data.messages?.length);
+
+        setMessages(mapped);
 
     } catch (err) {
-        console.error(err);
+        console.error(
+            `Error loading chat ${chatId}:`,
+            err
+        );
     }
+};
+  // Create a new chat session
+  const handleCreateChat = async (): Promise<number | null> => {
+    try {
+        const token = localStorage.getItem("access_token");
 
-    return null;
-    };
+        const res = await fetch(
+            "http://127.0.0.1:8000/chat/new",
+            {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+
+        const data = await res.json();
+
+        console.log("========== CREATE CHAT ==========");
+        console.log("STATUS:", res.status);
+        console.log("RESPONSE:", data);
+
+        if (!res.ok) {
+            console.error("Create chat failed:", data);
+            return null;
+        }
+
+        const newChatId = Number(
+            data.chat_id ?? data.id
+        );
+
+        if (!newChatId) {
+            console.error(
+                "Backend did not return a valid chat ID:",
+                data
+            );
+            return null;
+        }
+
+        console.log("NEW CHAT ID:", newChatId);
+
+        setActiveChatId(newChatId);
+        setMessages([]);
+
+        await fetchChats();
+
+        return newChatId;
+
+    } catch (err) {
+        console.error("Error creating chat:", err);
+        return null;
+    }
+};
 
   // Delete a chat session
-  const handleDeleteChat = async (chatId: string) => {
+  const handleDeleteChat = async (chatId: number) => {
     try {
       const token = localStorage.getItem("access_token");
 
@@ -141,7 +188,7 @@ function ChatPage() {
   };
 
   // Rename a chat session
-  const handleRenameChat = async (chatId: string, newTitle: string) => {
+  const handleRenameChat = async (chatId: number, newTitle: string) => {
   try {
     const token = localStorage.getItem("access_token");
 
@@ -204,10 +251,18 @@ function ChatPage() {
     setMessages((prev) => [...prev, userMessage, aiMessagePlaceholder]);
 
     try {
+      const token = localStorage.getItem("access_token");
+      console.log("TOKEN FROM STORAGE:", token);
+
+      console.log("========== SENDING MESSAGE ==========");
+      console.log("currentChatId:", currentChatId);
+      console.log("message:", text);
+    
       const response = await fetch("http://127.0.0.1:8000/chat/stream", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
           message: text,

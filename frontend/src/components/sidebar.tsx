@@ -17,19 +17,19 @@ import {
 } from "react-icons/fi";
 
 interface SidebarProps {
-  chats: Chat[];
-  activeChatId: string | null;
-  onSelectChat: (chatId: string) => void;
-  onCreateChat: () => void;
-  onDeleteChat: (chatId: string) => void;
-  onRenameChat: (chatId: string, newTitle: string) => void;
-  isCollapsed: boolean;
-  onToggleCollapse: () => void;
-  pinnedChatIds: string[];
-  onTogglePinChat: (chatId: string) => void;
-  activeModel: string;
-  onChangeModel: (model: string) => void;
-  onClearAllChats: () => void;
+    chats: Chat[];
+    activeChatId: number | null;
+    onSelectChat: (chatId: number) => void;
+    onCreateChat: () => void;
+    onDeleteChat: (chatId: number) => void;
+    onRenameChat: (chatId: number, newTitle: string) => void;
+    isCollapsed: boolean;
+    onToggleCollapse: () => void;
+    pinnedChatIds: number[];
+    onTogglePinChat: (chatId: number) => void;
+    activeModel: string;
+    onChangeModel: (model: string) => void;
+    onClearAllChats: () => void;
 }
 
 // Grouping chats by date periods and pinning state
@@ -84,7 +84,7 @@ const Sidebar = ({
   onClearAllChats,
 }: SidebarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [editingChatId, setEditingChatId] = useState<string | null>(null);
+  const [editingChatId, setEditingChatId] = useState<number | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showModelDropdown, setShowModelDropdown] = useState(false);
@@ -95,7 +95,7 @@ const Sidebar = ({
     setEditTitle(chat.title);
   };
 
-  const handleSaveRename = (chatId: string) => {
+  const handleSaveRename = (chatId: number) => {
     if (editTitle.trim()) {
       onRenameChat(chatId, editTitle.trim());
     }

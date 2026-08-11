@@ -13,7 +13,7 @@ def create_chat(
     db: Session,
     user_id: int,
     title: str = "New Chat",
-) -> Chat:
+) -> int:
 
     chat = Chat(
         title=title,
@@ -24,7 +24,7 @@ def create_chat(
     db.commit()
     db.refresh(chat)
 
-    return chat
+    return chat.id
 
 # ---------------------------------------------------------
 # Get Chat by ID
@@ -33,14 +33,16 @@ def create_chat(
 def get_chat(
     db: Session,
     chat_id: int,
-) -> Optional[Chat]:
-
+    user_id: int,
+):
     return (
         db.query(Chat)
-        .filter(Chat.id == chat_id)
+        .filter(
+            Chat.id == chat_id,
+            Chat.user_id == user_id,
+        )
         .first()
     )
-
 
 # ---------------------------------------------------------
 # Get All Chats
@@ -48,6 +50,7 @@ def get_chat(
 
 def get_all_chats(
     db: Session,
+    user_id: int,
 ):
 
     return (

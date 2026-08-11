@@ -3,6 +3,8 @@ from typing import Optional
 
 from jose import JWTError, jwt
 
+from backend.core.config import settings
+
 # -------------------------------------------------------------------
 # Configuration
 # -------------------------------------------------------------------
@@ -38,7 +40,7 @@ def create_access_token(
 
     encoded_jwt = jwt.encode(
         to_encode,
-        SECRET_KEY,
+        settings.SECRET_KEY,
         algorithm=ALGORITHM,
     )
 
@@ -60,7 +62,7 @@ def decode_access_token(token: str):
     try:
         payload = jwt.decode(
             token,
-            SECRET_KEY,
+            settings.SECRET_KEY,
             algorithms=[ALGORITHM],
         )
 

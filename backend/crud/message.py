@@ -65,6 +65,7 @@ def get_message(
 def get_chat_messages(
     db: Session,
     chat_id: int,
+    user_id: int,
 ) -> List[Message]:
 
     return (
@@ -96,24 +97,26 @@ def get_last_message(
 # Update Message
 # ---------------------------------------------------------
 
-def update_message(
+def update_chat_title(
     db: Session,
-    message_id: int,
-    new_content: str,
-) -> Optional[Message]:
+    chat_id: int,
+    new_title: str,
+):
+    chat = (
+        db.query(Chat)
+        .filter(Chat.id == chat_id)
+        .first()
+    )
 
-    message = get_message(db, message_id)
-
-    if message is None:
+    if chat is None:
         return None
 
-    message.content = new_content
+    chat.title = new_title
 
     db.commit()
-    db.refresh(message)
+    db.refresh(chat)
 
-    return message
-
+    return chat
 
 # ---------------------------------------------------------
 # Delete Message
