@@ -29,12 +29,12 @@ SESSION_ID = "default"
 
 db = SessionLocal()
 
-def chat(question: str, chat_id: str | None = None):
+def chat(question: str, db : Session, user_id: int, chat_id: str | None = None):
 
     if chat_id:
         from backend.services.history_service import load_chat
         try:
-            chat_data = load_chat(db=db, chat_id=chat_id, user_id=get_current_user().id)
+            chat_data = load_chat(db=db, chat_id=chat_id, user_id=user_id)
             history = []
             for msg in chat_data.get("messages", []):
                 if msg["role"] == "user":
@@ -60,24 +60,58 @@ def chat(question: str, chat_id: str | None = None):
     response = result["messages"][-1]
 
     if chat_id:
-        from history_service import load_chat, save_chat, generate_ai_title
-        try:
-            chat_data = load_chat(db=db, chat_id=chat_id, user_id=get_current_user().id)
-            chat_data["messages"].append({"role": "user", "content": question})
-            chat_data["messages"].append({"role": "assistant", "content": response.content})
-            
-            # If the title is "New Chat", generate a smart title
-            if chat_data.get("title") == "New Chat":
-                try:
-                    new_title = generate_ai_title(question).strip('"\'')
-                    if new_title:
-                        chat_data["title"] = new_title
-                except Exception as ex:
-                    print(f"Error generating AI title: {ex}")
-            
-            save_chat(chat_data)
-        except Exception as e:
-            print(f"Error saving chat in chat(): {e}")
+        from backend.services.history_service import (
+            load_chat,
+            save_chat,
+            generate_ai_title,
+        )
+
+    try:
+        chat_data = load_chat(
+            db=db,
+            chat_id=chat_id,
+            user_id=user_id,
+        )
+
+        print("CHAT DATA BEFORE TITLE:", chat_data)
+        print("CURRENT TITLE:", chat_data.get("title"))
+
+        chat_data["messages"].append({
+            "role": "user",
+            "content": question,
+        })
+
+        chat_data["messages"].append({
+            "role": "assistant",
+            "content": response.content,
+        })
+
+        if chat_data.get("title") == "New Chat":
+            print("Generating AI title...")
+
+            try:
+                new_title = generate_ai_title(question)
+
+                print("RAW GENERATED TITLE:", repr(new_title))
+
+                if new_title:
+                    new_title = new_title.strip().strip("\"'")
+
+                    print("CLEAN TITLE:", repr(new_title))
+
+                    chat_data["title"] = new_title
+
+            except Exception as ex:
+                print(f"Error generating AI title: {ex}")
+
+        print("CHAT DATA BEFORE SAVE:", chat_data)
+
+        save_chat(db, chat_id, chat_data, user_id)
+
+        print("Chat saved successfully.")
+
+    except Exception as e:
+        print(f"Error saving chat in chat(): {e}")
     else:
         memory.add_user_message(
             SESSION_ID,
@@ -236,6 +270,7 @@ def chat_stream(
                 update_chat_title(
                     db=db,
                     chat_id=chat_id,
+                    user_id=user_id,
                     new_title=new_title,
                 )
 

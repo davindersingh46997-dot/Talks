@@ -13,7 +13,7 @@ def create_chat(
     db: Session,
     user_id: int,
     title: str = "New Chat",
-) -> int:
+) -> Chat:
 
     chat = Chat(
         title=title,
@@ -24,7 +24,8 @@ def create_chat(
     db.commit()
     db.refresh(chat)
 
-    return chat.id
+    return chat
+
 
 # ---------------------------------------------------------
 # Get Chat by ID
@@ -34,7 +35,8 @@ def get_chat(
     db: Session,
     chat_id: int,
     user_id: int,
-):
+) -> Optional[Chat]:
+
     return (
         db.query(Chat)
         .filter(
@@ -43,6 +45,7 @@ def get_chat(
         )
         .first()
     )
+
 
 # ---------------------------------------------------------
 # Get All Chats
@@ -55,6 +58,7 @@ def get_all_chats(
 
     return (
         db.query(Chat)
+        .filter(Chat.user_id == user_id)
         .order_by(Chat.updated_at.desc())
         .all()
     )
@@ -67,10 +71,15 @@ def get_all_chats(
 def rename_chat(
     db: Session,
     chat_id: int,
+    user_id: int,
     new_title: str,
 ) -> Optional[Chat]:
 
-    chat = get_chat(db, chat_id)
+    chat = get_chat(
+        db=db,
+        chat_id=chat_id,
+        user_id=user_id,
+    )
 
     if chat is None:
         return None
@@ -82,6 +91,7 @@ def rename_chat(
 
     return chat
 
+
 # ---------------------------------------------------------
 # Delete Chat
 # ---------------------------------------------------------
@@ -89,9 +99,14 @@ def rename_chat(
 def delete_chat(
     db: Session,
     chat_id: int,
+    user_id: int,
 ) -> bool:
 
-    chat = get_chat(db, chat_id)
+    chat = get_chat(
+        db=db,
+        chat_id=chat_id,
+        user_id=user_id,
+    )
 
     if chat is None:
         return False
@@ -109,9 +124,14 @@ def delete_chat(
 def touch_chat(
     db: Session,
     chat_id: int,
+    user_id: int,
 ):
 
-    chat = get_chat(db, chat_id)
+    chat = get_chat(
+        db=db,
+        chat_id=chat_id,
+        user_id=user_id,
+    )
 
     if chat is None:
         return
@@ -127,11 +147,15 @@ def touch_chat(
 def chat_exists(
     db: Session,
     chat_id: int,
+    user_id: int,
 ) -> bool:
 
     return (
         db.query(Chat)
-        .filter(Chat.id == chat_id)
+        .filter(
+            Chat.id == chat_id,
+            Chat.user_id == user_id,
+        )
         .first()
         is not None
     )
@@ -143,6 +167,11 @@ def chat_exists(
 
 def chat_count(
     db: Session,
+    user_id: int,
 ) -> int:
 
-    return db.query(Chat).count()
+    return (
+        db.query(Chat)
+        .filter(Chat.user_id == user_id)
+        .count()
+    )

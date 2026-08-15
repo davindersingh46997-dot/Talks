@@ -174,6 +174,7 @@ def rename_chat(
     chat = update_chat_title(
         db=db,
         chat_id=chat_id,
+        user_id=current_user.id,
         new_title=request.title,
     )
 

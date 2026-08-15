@@ -15,7 +15,6 @@ from backend.crud.chat import create_chat as crud_create_chat
 from fastapi import HTTPException, status
 
 from backend.crud.chat import (
-    get_chat,
     get_all_chats,
     rename_chat,
     delete_chat,
@@ -90,24 +89,15 @@ def create_chat(
     )
 
 
-def load_chat(
-    db: Session,
-    chat_id: int,
-    user_id: int,
-):
-    chat = get_chat(
-        db=db,
-        chat_id=chat_id,
-        user_id=user_id,
-    )
-
-    if chat is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Chat not found",
+def load_chat(db: Session, chat_id: int, user_id: int):
+    return (
+        db.query(Chat)
+        .filter(
+            Chat.id == chat_id,
+            Chat.user_id == user_id,
         )
-
-    return chat
+        .first()
+    )
 
 # -------------------------------------------------
 # List Chats
@@ -148,12 +138,14 @@ Conversation:
 def update_chat_title(
     db: Session,
     chat_id: int,
+    user_id: int,
     new_title: str,
 ):
 
     return rename_chat(
         db=db,
         chat_id=chat_id,
+        user_id=user_id,
         new_title=new_title,
     )
 
@@ -161,11 +153,13 @@ def update_chat_title(
 def remove_chat(
     db: Session,
     chat_id: int,
+    user_id: int,
 ):
 
     return delete_chat(
         db=db,
         chat_id=chat_id,
+        user_id=user_id,
     )
 
 def save_user_message(
@@ -226,67 +220,86 @@ def load_chat_history(
 def clear_chat_history(
     db: Session,
     chat_id: int,
+    user_id: int,
 ):
 
     return delete_chat_messages(
         db=db,
         chat_id=chat_id,
+        user_id=user_id,
     )
 
 def update_timestamp(
     db: Session,
     chat_id: int,
+    user_id: int,
 ):
 
     touch_chat(
         db=db,
         chat_id=chat_id,
+        user_id=user_id,
     )
 
 
 def exists(
     db: Session,
     chat_id: int,
+    user_id: int,
 ):
 
     return chat_exists(
         db=db,
         chat_id=chat_id,
+        user_id=user_id,
     )
 
 
 def total_chats(
     db: Session,
+    user_id: int,
 ):
 
-    return chat_count(db)
-
+    return chat_count(
+        db=db,
+        user_id=user_id,
+    )
 
 
 def save_chat(
     db: Session,
     chat_id: int,
-    role: str,
-    content: str,
+    chat_data: dict,
+    user_id: int,
 ):
-    """
-    Save a single message to an existing chat.
-
-    Args:
-        db: SQLAlchemy session
-        chat_id: Chat ID
-        role: "user", "assistant", or "system"
-        content: Message text
-    """
-
-    chat = get_chat(db,chat_id=chat_id,user_id=None)
-
-    if chat is None:
-        raise ValueError(f"Chat {chat_id} does not exist.")
-
-    return create_message(
-        db=db,
-        chat_id=chat_id,
-        role=role,
-        content=content,
+    chat = (
+        db.query(Chat)
+        .filter(
+            Chat.id == chat_id,
+            Chat.user_id == user_id,
+        )
+        .first()
     )
+
+    if not chat:
+        raise ValueError("Chat not found")
+
+    chat.title = chat_data.get("title", chat.title)
+
+    existing_count = len(chat.messages)
+
+    new_messages = chat_data["messages"][existing_count:]
+
+    for msg in new_messages:
+        db_message = Message(
+            chat_id=chat.id,
+            role=msg["role"],
+            content=msg["content"],
+        )
+
+        db.add(db_message)
+
+    db.commit()
+    db.refresh(chat)
+
+    print(f"✅ SAVED TITLE: {chat.title}")

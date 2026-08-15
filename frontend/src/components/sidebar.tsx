@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "../styles/Sidebar.css";
 import type { Chat } from "../types/chat";
 import { 
