@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../styles/Sidebar.css";
+import "../styles/sidebar.css";
 import type { Chat } from "../types/chat";
 import { 
   FiPlus, 
@@ -149,7 +149,10 @@ const Sidebar = ({
   // Distribute chats into lists
   filteredChats.forEach((chat) => {
     const isPinned = pinnedChatIds.includes(chat.id);
-    const group = getGroupForChat(chat.updated_at, isPinned);
+    const group = getGroupForChat(
+    chat.updated_at ?? new Date().toISOString(),
+    isPinned
+);
     groups[group].push(chat);
   });
 

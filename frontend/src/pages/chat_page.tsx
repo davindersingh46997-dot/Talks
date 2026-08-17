@@ -10,13 +10,13 @@ interface BackendMessage {
   content: string;
 }
 
-interface BackendChatDetail {
-  id: string;
-  title: string;
-  created_at: string;
-  updated_at: string;
-  messages: BackendMessage[];
-}
+// interface BackendChatDetail {
+//   id: string;
+//   title: string;
+//   created_at: string;
+//   updated_at: string;
+//   messages: BackendMessage[];
+// }
 
 function ChatPage() {
   const [chats, setChats] = useState<Chat[]>([]);

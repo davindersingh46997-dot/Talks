@@ -11,3 +11,4 @@ langchain
 langgraph
 langchain-huggingface
 huggingface-hub
+email-validator
