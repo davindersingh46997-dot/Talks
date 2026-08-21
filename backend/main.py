@@ -1,10 +1,13 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
-from backend.core.database import get_db
+from backend.core.database import Base, engine, get_db
+from backend import models
 
 from backend.services.chat_service import chat, chat_stream
 from backend.services.history_service import (
@@ -19,17 +22,19 @@ from backend.services.history_service import (
 from backend.api.routes.auth import router as auth_router
 from backend.api.dependencies import get_current_user
 from backend.models.user import User
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    Base.metadata.create_all(bind=engine)
+    yield
 
-app = FastAPI()
+
+app = FastAPI(lifespan=lifespan)
 
 # Add middleware immediately after creating the app
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-    ],
+    allow_origins=[],
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -64,6 +69,7 @@ def new_chat(
         "chat_id": chat.id,
     }
 
+
 @app.post("/chat/stream")
 def chat_stream_endpoint(
     request: ChatRequest,
@@ -84,6 +90,7 @@ def chat_stream_endpoint(
         generate(),
         media_type="text/plain"
     )
+    
 
 @app.get("/chats")
 def get_chats(

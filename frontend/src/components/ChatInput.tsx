@@ -22,6 +22,21 @@ const ChatInput = ({ onSendMessage, isGenerating }: ChatInputProps) => {
     }
   };
 
+  const handleFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+        return;
+    }
+
+    console.log("Selected file:", file);
+    console.log("File name:", file.name);
+    console.log("File type:", file.type);
+    console.log("File size:", file.size);
+};
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -40,12 +55,27 @@ const ChatInput = ({ onSendMessage, isGenerating }: ChatInputProps) => {
     }
   }, [question]);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   return (
     <div className="chat-input-wrapper">
       <div className="chat-input-container">
-        <button className="chat-input-action-btn" aria-label="Attach file" type="button">
+        <button 
+        className="chat-input-action-btn"
+        aria-label="Attach_file"
+        type="button"
+        onClick = {() => fileInputRef.current?.click()}
+         >
           <FiPaperclip size={18} />
         </button>
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".pdf,.doc,.docx,.txt"
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+        />
 
         <textarea
           ref={textareaRef}
