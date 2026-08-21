@@ -10,6 +10,6 @@ embedding_model = HuggingFaceEmbeddings(
     }
 )
 
+def Embeddings(document : str):
 
-def get_embedding_model():
-    return embedding_model
+    return embedding_model(document)

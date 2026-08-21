@@ -3,7 +3,7 @@ import "../styles/sign_up.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { FaGoogle, FaGithub } from "react-icons/fa";
+import { FaGoogle, FaGithub, FaRobot } from "react-icons/fa";
 import {
     FiUser,
     FiMail,
@@ -16,6 +16,7 @@ import {
 const SignupPage = () => {
 
     const navigate = useNavigate();
+    const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -53,7 +54,7 @@ const SignupPage = () => {
             setLoading(true);
 
             const response = await fetch(
-                "http://127.0.0.1:8000/auth/register",
+                `${apiUrl}/auth/register`,
                 {
                     method: "POST",
                     headers: {
@@ -100,11 +101,7 @@ const SignupPage = () => {
 
                 <div className="brand">
 
-                    <img
-                        src="/logo.svg"
-                        alt="Logo"
-                        className="logo"
-                    />
+                    <div className="logo" aria-label="AI Assistant logo"><FaRobot /></div>
 
                     <h1>AI Assistant</h1>
 
@@ -288,21 +285,21 @@ const SignupPage = () => {
 
                     <div className="social-buttons">
 
-                        <button className="social-btn">
+                        <a className="social-btn" href={`${apiUrl}/auth/google`}>
 
                             <FaGoogle/>
 
                             Google
 
-                        </button>
+                        </a>
 
-                        <button className="social-btn">
+                        <a className="social-btn" href={`${apiUrl}/auth/github`}>
 
                             <FaGithub/>
 
                             GitHub
 
-                        </button>
+                        </a>
 
                     </div>
 

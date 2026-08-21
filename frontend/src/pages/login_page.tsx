@@ -1,6 +1,6 @@
 import "../styles/login_page.css";
 import { FcGoogle } from "react-icons/fc";
-import { FaGithub } from "react-icons/fa";
+import { FaGithub, FaRobot } from "react-icons/fa";
 import { FiMail, FiLock, FiEye, FiArrowRight , FiEyeOff } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import type { LoginFormData } from "../types/login_schema";
@@ -14,10 +14,11 @@ const LoginPage = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-        const response = await fetch("http://127.0.0.1:8000/auth/login", {
+        const response = await fetch(`${apiUrl}/auth/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -52,7 +53,7 @@ const LoginPage = () => {
       {/* Left Side */}
       <div className="login-left">
         <div className="brand">
-          <img src="/logo.svg" alt="Logo" className="logo" />
+          <div className="logo" aria-label="AI Assistant logo"><FaRobot /></div>
 
           <h1>AI Assistant</h1>
 
@@ -164,15 +165,15 @@ const LoginPage = () => {
 
           <div className="social-buttons">
 
-            <button className="social-btn">
+            <a className="social-btn" href={`${apiUrl}/auth/google`}>
               <FcGoogle size={24} />
               <span>Google</span>
-            </button>
+            </a>
 
-            <button className="social-btn">
+            <a className="social-btn" href={`${apiUrl}/auth/github`}>
               <FaGithub size={22} color="#181717" />
               <span>GitHub</span>
-            </button>
+            </a>
 
           </div>
 

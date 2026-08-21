@@ -1,31 +1,58 @@
 import "../styles/sign_in.css";
 
-import { FaGoogle, FaGithub } from "react-icons/fa";
+import { FaGoogle, FaGithub, FaRobot } from "react-icons/fa";
 import { FiMail, FiArrowRight } from "react-icons/fi";
 
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+const getIndianGreeting = () => {
+    const hour = Number(new Intl.DateTimeFormat("en-IN", {
+        hour: "numeric",
+        hour12: false,
+        timeZone: "Asia/Kolkata",
+    }).format(new Date()));
+
+    if (hour < 12) return "Good morning";
+    if (hour < 17) return "Good afternoon";
+    if (hour < 21) return "Good evening";
+    return "Good night";
+};
 
 const SignInPage = () => {
 
     const navigate = useNavigate();
+    const [greeting, setGreeting] = useState(getIndianGreeting);
+    const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+
+    useEffect(() => {
+        const timer = window.setInterval(() => setGreeting(getIndianGreeting()), 60_000);
+        return () => window.clearInterval(timer);
+    }, []);
 
     return (
 
         <div className="signin-page">
 
+            <div className="ambient-orb orb-one" />
+            <div className="ambient-orb orb-two" />
+            <div className="stars" />
+
             <div className="signin-card">
+
+                <div className="auth-status">
+                    <span /> {greeting} · India
+                </div>
 
                 {/* Logo */}
 
-                <img
-                    src="/logo.svg"
-                    alt="Logo"
-                    className="signin-logo"
-                />
+                <div className="signin-logo" aria-label="AI Assistant logo">
+                    <FaRobot />
+                </div>
 
                 {/* Heading */}
 
-                <h1>AI Assistant</h1>
+                <h1>AI Assistant<span>.</span></h1>
 
                 <p className="subtitle">
                     Your intelligent workspace for coding, chatting,
@@ -36,10 +63,9 @@ const SignInPage = () => {
 
                 <div className="hero">
 
-                    <img
-                        src="/ai-illustration.svg"
-                        alt="AI"
-                    />
+                    <div className="hero-avatar" aria-label="AI assistant">
+                        <FaRobot />
+                    </div>
 
                 </div>
 
@@ -82,28 +108,28 @@ const SignInPage = () => {
 
                     </button>
 
-                    <button className="social-btn">
+                    <a className="social-btn" href={`${apiUrl}/auth/google`}>
 
-                        <FaGoogle />
+                        <FaGoogle className="google-logo" />
 
                         Continue with Google
 
-                    </button>
+                    </a>
 
-                    <button className="social-btn">
+                    <a className="social-btn" href={`${apiUrl}/auth/github`}>
 
-                        <FaGithub />
+                        <FaGithub className="github-logo" />
 
                         Continue with GitHub
 
-                    </button>
+                    </a>
 
                     <p className="signup-text">
 
                         Don't have an account?
 
                         <span
-                            onClick={() => navigate("/signup")}
+                            onClick={() => navigate("/sign_up")}
                         >
                             Create Account
                         </span>
