@@ -240,12 +240,13 @@ function ChatPage() {
       text: text,
     };
     
-    // Setup placeholder for AI message
+    // Setup placeholder for AI message with isThinking true
     const aiMessageId = `ai-${Date.now()}`;
     const aiMessagePlaceholder: Message = {
       id: aiMessageId,
       role: "assistant",
       text: "",
+      isThinking: true,
     };
 
     setMessages((prev) => [...prev, userMessage, aiMessagePlaceholder]);
@@ -285,10 +286,12 @@ function ChatPage() {
         const chunk = decoder.decode(value, { stream: true });
         aiResponseText += chunk;
 
-        // Update active message in state
+        // Update active message in state and mark isThinking as false
         setMessages((prev) =>
           prev.map((msg) =>
-            msg.id === aiMessageId ? { ...msg, text: aiResponseText } : msg
+            msg.id === aiMessageId
+              ? { ...msg, text: aiResponseText, isThinking: false }
+              : msg
           )
         );
       }
@@ -301,7 +304,11 @@ function ChatPage() {
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === aiMessageId
-            ? { ...msg, text: "⚠️ Error generating response. Please try again." }
+            ? {
+                ...msg,
+                text: "⚠️ Error generating response. Please try again.",
+                isThinking: false,
+              }
             : msg
         )
       );
@@ -343,6 +350,7 @@ function ChatPage() {
         <ChatArea
           messages={messages}
           onSelectSuggestion={handleSendMessage}
+          isGenerating={isGenerating}
         />
 
         <ChatInput

@@ -1,7 +1,8 @@
-from langchain_core.messages import HumanMessage, AIMessage
-from requests import Session
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from sqlalchemy.orm import Session
 from backend.api.dependencies import get_current_user
 from backend.core.graph import graph
+from backend.services.rag_service import get_content
 
 from backend.core.llm import chat_model
 
@@ -52,7 +53,8 @@ def chat(question: str, db : Session, user_id: int, chat_id: str | None = None):
     )
 
     inputs = {
-        "messages": history
+        "messages": history,
+        "context": get_content(question),
     }
 
     result = graph.invoke(inputs)
@@ -201,13 +203,45 @@ def chat_stream(
         raise
 
     # ---------------------------------
+    # Retrieve RAG context & format prompt
+    # ---------------------------------
+
+    context = ""
+    try:
+        context = get_content(question)
+        print(f"✅ Retrieved context length: {len(context)}")
+    except Exception as e:
+        print(f"❌ Error retrieving context in chat_stream: {e}")
+
+    if context:
+        system_content = f"""You are a helpful AI assistant.
+
+Use the following retrieved context to answer the user's question accurately.
+
+Retrieved Context:
+{context}
+
+Instructions:
+- Use the retrieved context when it contains relevant information.
+- Do not invent facts that are not supported by the context.
+- If the context does not contain the answer, answer helpfully based on your general knowledge while noting that the answer was not found in the uploaded documents.
+"""
+    else:
+        system_content = "You are a helpful, knowledgeable AI assistant. Provide clear, accurate, and concise answers."
+
+    prompt_messages = [
+        SystemMessage(content=system_content),
+        *history
+    ]
+
+    # ---------------------------------
     # Generate AI response
     # ---------------------------------
 
     full_response = ""
 
     try:
-        for chunk in chat_model.stream(history):
+        for chunk in chat_model.stream(prompt_messages):
 
             if hasattr(chunk, "content") and chunk.content:
 

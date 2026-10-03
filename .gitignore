@@ -1,26 +1,33 @@
-# Python virtual environment
-environment/
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pdf
+
+# Virtual environments
 venv/
 .venv/
 
 # Environment variables
 .env
+.env.*
 
-# Python cache
-__pycache__/
-*.pyc
+# User uploaded files
+uploads/
 
-# Node modules
+# Vector database
+vector_db/
+
+# Logs
+*.log
+
+# Node
 node_modules/
+frontend/node_modules/
 
-# Build folders
-dist/
-build/
+# Frontend build
+frontend/dist/
 
-# IDE
-.vscode/
-.idea/
-
-# OS files
+# OS
 .DS_Store
 Thumbs.db

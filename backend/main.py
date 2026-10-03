@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
+from fastapi import UploadFile, File
 
 from backend.core.database import Base, engine, get_db
 from backend import models
@@ -20,8 +21,11 @@ from backend.services.history_service import (
 )
 
 from backend.api.routes.auth import router as auth_router
+from backend.api.routes.rag import router as rag_router
 from backend.api.dependencies import get_current_user
 from backend.models.user import User
+from fastapi import APIRouter
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     Base.metadata.create_all(bind=engine)
@@ -42,6 +46,12 @@ app.add_middleware(
 
 # Include routers AFTER middleware
 app.include_router(auth_router)
+
+app.include_router(
+    rag_router,
+    prefix="/rag",
+    tags=["RAG"]
+)
 
 class ChatRequest(BaseModel):
     message: str
