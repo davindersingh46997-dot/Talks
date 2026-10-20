@@ -8,15 +8,5 @@ text_splitter = RecursiveCharacterTextSplitter(
 )
 
 
-def split_text(text: str) -> list[str]:
-    """
-    Splits the input text into chunks using the RecursiveCharacterTextSplitter.
-
-    Args:
-        text (str): The input text to be split.
-
-    Returns:
-        list[str]: A list of text chunks.
-    """
-    return text_splitter.split_text(text)
-
+def split_documents(documents):
+    return text_splitter.split_documents(documents)

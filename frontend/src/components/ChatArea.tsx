@@ -6,9 +6,14 @@ import { useEffect, useRef } from "react";
 interface ChatAreaProps {
   messages: Message[];
   onSelectSuggestion: (suggestionText: string) => void;
+  isGenerating?: boolean;
 }
 
-const ChatArea = ({ messages, onSelectSuggestion }: ChatAreaProps) => {
+const ChatArea = ({
+  messages,
+  onSelectSuggestion,
+  isGenerating = false,
+}: ChatAreaProps) => {
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -64,10 +69,11 @@ const ChatArea = ({ messages, onSelectSuggestion }: ChatAreaProps) => {
   return (
     <div className="chat-area">
       <div className="chat-area-container">
-        {messages.map((message) => (
+        {messages.map((message, idx) => (
           <MessageBubble
             key={message.id}
             message={message}
+            isStreaming={isGenerating && idx === messages.length - 1}
           />
         ))}
         <div ref={bottomRef} style={{ height: "1px" }} />

@@ -10,4 +10,5 @@ export interface Message {
   id: number | string;
   role: "user" | "assistant";
   text: string;
+  isThinking?: boolean;
 }

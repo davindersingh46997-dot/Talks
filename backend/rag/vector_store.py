@@ -1,8 +1,10 @@
+from pathlib import Path
 from langchain_chroma import Chroma
 
-from rag.embedding import get_embedding_model
+from backend.rag.embedding import get_embedding_model
 
-DB_DIRECTORY = "vector_db"
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+DB_DIRECTORY = str(BASE_DIR / "vector_db")
 
 embedding_model = get_embedding_model()
 
