@@ -1,9 +1,9 @@
 from backend.rag import (
     loader,
-    retreiver,
     splitter,
     vector_store
 )
+from backend.rag.crag import retrieve_with_correction
 
 def rag_service(file_path: str):
 
@@ -21,15 +21,9 @@ def rag_service(file_path: str):
 
 def get_documents(query: str, k: int = 4):
     """
-    Retrieve raw LangChain Document objects for a given query.
+    Retrieve and correct raw document results for a given query.
     """
-    try:
-        retriever = retreiver.get_retriever(k=k)
-        documents = retriever.invoke(query)
-        return documents or []
-    except Exception as e:
-        print(f"Error retrieving documents: {e}")
-        return []
+    return retrieve_with_correction(query, k=k)
 
 
 def format_documents(documents) -> str:

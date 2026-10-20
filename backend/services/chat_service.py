@@ -54,7 +54,6 @@ def chat(question: str, db : Session, user_id: int, chat_id: str | None = None):
 
     inputs = {
         "messages": history,
-        "context": get_content(question),
     }
 
     result = graph.invoke(inputs)
