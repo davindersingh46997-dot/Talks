@@ -8,6 +8,8 @@ from langchain_core.messages import (
     SystemMessage,
 )
 
+from backend.guardrails.guard import guardrails
+
 from typing import TypedDict, Annotated, Iterator
 
 from backend.core.llm import chat_model
@@ -89,7 +91,9 @@ Instructions:
         *state["messages"]
     ]
 
-    response = chat_model.invoke(messages)
+    guard_model = guardrails | chat_model
+
+    response = guard_model.invoke(messages)
 
     return {
         "messages": [response],

@@ -73,7 +73,7 @@ const ChatArea = ({
           <MessageBubble
             key={message.id}
             message={message}
-            isStreaming={isGenerating && idx === messages.length - 1}
+            isGenerating={isGenerating && idx === messages.length - 1}
           />
         ))}
         <div ref={bottomRef} style={{ height: "1px" }} />

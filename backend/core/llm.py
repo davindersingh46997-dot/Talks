@@ -1,30 +1,22 @@
+
 from dotenv import load_dotenv
 import os
 
-from langchain_huggingface import (
-    ChatHuggingFace,
-    HuggingFaceEndpoint,
-)
-
-from backend.memory.short_term import ShortTermMemory
+from langchain_openai import ChatOpenAI
 
 load_dotenv()
 
-HF_TOKEN = os.getenv("HF_TOKEN")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
-llm = HuggingFaceEndpoint(
+if not OPENROUTER_API_KEY:
+    raise ValueError("Missing OPENROUTER_API_KEY")
 
-    repo_id="Qwen/Qwen2.5-Coder-32B-Instruct",
-
-    task="text-generation",
-
-    max_new_tokens=2048,
-
+chat_model = ChatOpenAI(
+    model="nvidia/nemotron-3.5-lightning:free",
+    api_key=os.getenv("OPENROUTER_API_KEY"),
+    base_url="https://openrouter.ai/api/v1",
     temperature=0.2,
-
-    huggingfacehub_api_token=HF_TOKEN
-)
-
-chat_model = ChatHuggingFace(
-    llm=llm
+    max_tokens=2048,
+    max_retries=2,
+    timeout=120
 )

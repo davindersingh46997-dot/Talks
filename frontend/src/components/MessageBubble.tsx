@@ -5,6 +5,7 @@ import "../styles/MessageBubble.css";
 
 interface MessageBubbleProps {
   message: Message;
+  isGenerating?: boolean;
 }
 
 // Subcomponent for Code Block with Copy functionality
@@ -137,21 +138,44 @@ const renderFormattedText = (text: string) => {
   });
 };
 
-const MessageBubble = ({ message }: MessageBubbleProps) => {
+const MessageBubble = ({ message, isGenerating = false }: MessageBubbleProps) => {
   const isUser = message.role === "user";
+  const isThinking = !isUser && message.isThinking;
 
   return (
     <div className={`message-row ${isUser ? "user" : "assistant"}`}>
       {/* AI Avatar */}
       {!isUser && (
-        <div className="message-avatar ai" aria-hidden="true">
+        <div
+          className={`message-avatar ai ${isThinking ? "thinking" : ""}`}
+          aria-hidden="true"
+        >
           AI
         </div>
       )}
       
       <div className="message-content-wrapper">
-        <div className={`message-bubble ${isUser ? "user-bubble" : "assistant-bubble"}`}>
-          {isUser ? message.text : renderFormattedText(message.text)}
+        <div
+          className={`message-bubble ${isUser ? "user-bubble" : "assistant-bubble"}`}
+          aria-busy={isThinking || undefined}
+        >
+          {isThinking ? (
+            <div className="thinking-indicator" role="status" aria-label="AI is thinking">
+              <span>Thinking</span>
+              <span className="thinking-dots" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </span>
+            </div>
+          ) : (
+            <>
+              {isUser ? message.text : renderFormattedText(message.text)}
+              {!isUser && isGenerating && message.text && (
+                <span className="typing-cursor" aria-hidden="true" />
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>

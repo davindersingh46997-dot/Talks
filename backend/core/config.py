@@ -1,8 +1,10 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-
     HF_TOKEN: str
+    OPENROUTER_API_KEY: str
+    TAVILY_API_KEY: str
+    NVIDIA_API_KEY: str
 
     DB_HOST: str
     DB_PORT: int

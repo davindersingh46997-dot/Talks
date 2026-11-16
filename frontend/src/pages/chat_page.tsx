@@ -313,6 +313,13 @@ function ChatPage() {
         )
       );
     } finally {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === aiMessageId && msg.isThinking
+            ? { ...msg, isThinking: false }
+            : msg
+        )
+      );
       setIsGenerating(false);
     }
   };
