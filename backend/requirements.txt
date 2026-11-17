@@ -10,6 +10,7 @@ python-multipart
 langchain
 langchain-chroma
 langchain-community
+PyMuPDF
 langchain-text-splitters
 langgraph
 langchain-huggingface
